@@ -1,0 +1,17 @@
+{
+  "name": "@gamecenter/tombala",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "babel src --out-dir dist --extensions .js,.jsx"
+  },
+  "dependencies": {
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.10",
+    "@babel/preset-env": "^7.22.15",
+    "@babel/preset-react": "^7.27.1"
+  }
+}
