@@ -9,17 +9,19 @@ export function useTombalaGame() {
   const [winnerState, setWinnerState] = useState(null);
   const [chinkoCount, setChinkoCount] = useState(0);
 
-  //  önce fonksiyon tanımlanmalı
-  function onNumberDrawn(number) {
-    setDrawnNumbers((prev) =>
-      prev.includes(number) ? prev : [...prev, number]
-    );
-  }
 
-  //  sonra hook çağrılmalı
+  function onNumberDrawn(number) {
+
+  const onlyNumber = typeof number === 'object' ? number.number : number;
+
+  setDrawnNumbers((prev) =>
+    prev.includes(onlyNumber) ? prev : [...prev, onlyNumber]
+  );
+}
+
   const socket = useTombalaSocket(onNumberDrawn);
 
-  //  sadece kurucu kullanır
+  
   function drawNumber() {
     let newNumber;
     do {

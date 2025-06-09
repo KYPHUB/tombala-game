@@ -1,3 +1,4 @@
+// tombala-game/src/pages/GamePage.jsx
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Stack, Fade, Grid } from '@mui/material';
 import TombalaCard from '../components/TombalaCard';
@@ -9,6 +10,7 @@ import { useTombalaGame } from '../hooks/useTombalaGame';
 import { useAuth } from '../context/AuthContext';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useSocket } from '../context/WebSocketContext'; 
 
 export default function GamePage() {
   const {
@@ -21,11 +23,16 @@ export default function GamePage() {
 
   const { user } = useAuth();
   const { lobbyId } = useParams();
+  const socket = useSocket(); 
   const [isOwner, setIsOwner] = useState(false);
   const [players, setPlayers] = useState([]);
   const [ownerEmail, setOwnerEmail] = useState('');
 
-  // Lobi bilgisi her zaman fetch edilmeli (yenileme / yönlenme sonrası için)
+  useEffect(() => {
+    if (!socket || !lobbyId) return;
+    socket.emit('join-lobby', lobbyId);
+  }, [socket, lobbyId]);
+
   useEffect(() => {
     const fetchLobby = async () => {
       try {

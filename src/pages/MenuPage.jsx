@@ -10,19 +10,37 @@ import { useSocket } from '../context/WebSocketContext';
 
 function MenuPage() {
   const [showSettings, setShowSettings] = useState(false);
-  const navigate   = useNavigate();
+  const navigate = useNavigate();
   const { lobbyId } = useParams();
-  const socket     = useSocket();
+  const socket = useSocket();
 
-  /* Katılım + oyunun başlamasını dinle */
+  // WS ile lobiye katıl + oyun başlatıldığında yönlendirme
   useEffect(() => {
     if (!socket || !lobbyId) return;
 
-    console.log('🟢 WS → join-lobby', lobbyId);
     socket.emit('join-lobby', lobbyId);
+    console.log('🟢 WS → join-lobby', lobbyId);
 
     const handleStart = (id) => {
       console.log('🚀 tombala:start alındı', id);
+
+      if (document.hidden) {
+        const originalTitle = document.title;
+        let toggle = true;
+        const blinkInterval = setInterval(() => {
+          document.title = toggle ? '🎯 Oyun Başladı!' : originalTitle;
+          toggle = !toggle;
+        }, 1000);
+
+        const stopBlink = () => {
+          clearInterval(blinkInterval);
+          document.title = originalTitle;
+          document.removeEventListener('visibilitychange', stopBlink);
+        };
+
+        document.addEventListener('visibilitychange', stopBlink);
+      }
+
       navigate(`/tombala/play/${id}`);
     };
 
@@ -30,11 +48,10 @@ function MenuPage() {
     return () => socket.off('tombala:start', handleStart);
   }, [socket, lobbyId, navigate]);
 
-  /* Kurucunun “Oyna” butonu */
   const handleStartGame = () => {
     if (!socket) return;
-    socket.emit('tombala:start', lobbyId);   // lobideki herkese sinyal
-    navigate(`/tombala/play/${lobbyId}`);    // kurucu hemen oyuna girer
+    socket.emit('tombala:start', lobbyId);
+    navigate(`/tombala/play/${lobbyId}`);
   };
 
   return (
